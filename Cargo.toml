@@ -1,0 +1,8 @@
+[package]
+name = "netchoose"
+version = "0.1.0"
+authors = ["Danilo Bargen <mail@dbrgn.ch>"]
+
+[dependencies.gtk]
+version = "0.1.0"
+features = ["v3_10"]
