@@ -45,10 +45,21 @@ fn create_and_setup_view() -> TreeView {
 
 fn create_toolbar() -> Toolbar {
     let toolbar = Toolbar::new();
+    toolbar
+}
+
+fn create_refresh_button() -> ToolButton {
     let refresh = ToolButton::new_from_stock("gtk-refresh");
     ToolItemExt::set_tooltip_text(&refresh, "Reload the list of profiles");
-    toolbar.insert(&refresh, -1);
-    toolbar
+    refresh
+}
+
+fn refresh_profiles(list: &TreeView) {
+    // TODO: The clearing is not visible,
+    // because this operation is blocking.
+    list.set_model::<ListStore>(None);
+    let model = create_and_fill_model();
+    list.set_model(Some(&model));
 }
 
 fn main() {
@@ -68,15 +79,22 @@ fn main() {
 
     // Create toolbar
     let toolbar = create_toolbar();
+    let refresh = create_refresh_button();
+    toolbar.insert(&refresh, -1);
 
     // Create tree view
     let list = create_and_setup_view();
 
-    // Attach a model to tree view
-    let model = create_and_fill_model();
-    list.set_model(Some(&model));
+    // Add profiles
+    refresh_profiles(&list);
 
-    // Handle double click
+    // Show all widgets
+    v_box.pack_start(&toolbar, false, false, 0);
+    v_box.pack_start(&list, true, true, 0);
+    window.add(&v_box);
+    window.show_all();
+
+    // Handle double click on list
     list.connect_row_activated(|tree_view, _, _| {
         let selection = tree_view.get_selection();
         if let Some((model, iter)) = selection.get_selected() {
@@ -87,11 +105,11 @@ fn main() {
         };
     });
 
-    // Show all widgets
-    v_box.pack_start(&toolbar, false, false, 0);
-    v_box.pack_start(&list, true, true, 0);
-    window.add(&v_box);
-    window.show_all();
+    // Handle refresh button
+    refresh.connect_clicked(move |&_| {
+        println!("Refreshing profiles...");
+        refresh_profiles(&list);
+    });
 
     // Window closing event
     window.connect_delete_event(|_, _| {
