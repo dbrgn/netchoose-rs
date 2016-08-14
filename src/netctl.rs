@@ -23,3 +23,19 @@ pub fn get_profiles() -> Vec<Profile> {
               active: line.starts_with('*'),
           }).collect::<Vec<_>>()
 }
+
+/// Switch to the profile with the specified name.
+///
+/// Note: This command is blocking and might take a while!
+pub fn switch_to_profile(name: &str) {
+    let status = Command::new("gksudo")
+                         .arg("netctl")
+                         .arg("switch-to").arg(name)
+                         .status()
+                         .expect("Could not switch netctl profile");
+    if status.success() {
+        println!("Switched to {}!", name);
+    } else {
+        println!("Switching to {} failed", name);
+    }
+}

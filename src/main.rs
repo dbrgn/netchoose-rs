@@ -53,13 +53,26 @@ fn main() {
     window.set_default_size(240, 320);
     window.set_position(WindowPosition::Center);
 
-    // Create list view
+    // Create tree view
     let list = create_and_setup_view();
+
+    // Attach a model to tree view
     let model = create_and_fill_model();
     list.set_model(Some(&model));
-    window.add(&list);
+
+    // Handle double click
+    list.connect_row_activated(|tree_view, _, _| {
+        let selection = tree_view.get_selection();
+        if let Some((model, iter)) = selection.get_selected() {
+            let name = model.get_value(&iter, 1)
+                            .get::<String>()
+                            .expect("Could not get profile name");
+            netctl::switch_to_profile(&name);
+        };
+    });
 
     // Show all widgets
+    window.add(&list);
     window.show_all();
 
     // Window closing event
