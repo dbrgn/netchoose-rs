@@ -50,7 +50,7 @@ fn main() {
     // Init window
     let window = Window::new(WindowType::Toplevel);
     window.set_title("Netchoose");
-    window.set_default_size(640, 480);
+    window.set_default_size(240, 320);
     window.set_position(WindowPosition::Center);
 
     // Create list view
