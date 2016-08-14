@@ -1,3 +1,7 @@
+//! Everything interfacing with netctl.
+//!
+//! Communication with netctl is done through a subprocess.
+
 use std::process::Command;
 
 #[derive(Debug)]
@@ -6,6 +10,7 @@ pub struct Profile {
     pub active: bool,
 }
 
+/// Return list of netctl profiles.
 pub fn get_profiles() -> Vec<Profile> {
     let output = Command::new("netctl")
                          .arg("list")
