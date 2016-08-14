@@ -1,14 +1,18 @@
 extern crate gtk;
 
+mod netctl;
+
 use gtk::prelude::*;
 use gtk::{Window, WindowType, WindowPosition};
 use gtk::{ListStore, TreeView, TreeViewColumn, CellRendererText};
 
 fn create_and_fill_model() -> ListStore {
-    let model = ListStore::new(&[String::static_type()]);
-    let entries = &["Michel", "Sara", "Liam", "Zelda", "Neo", "Octopus master"];
-    for entry in entries.iter() {
-        model.insert_with_values(None, &[0], &[&entry]);
+    let model = ListStore::new(&[String::static_type(), String::static_type()]);
+    let profiles = netctl::get_profiles();
+    for profile in profiles.iter() {
+        let active = if profile.active { "*" } else { "" };
+        let name = &profile.name;
+        model.insert_with_values(None, &[0, 1], &[&active, name]);
     }
     model
 }
@@ -30,8 +34,9 @@ fn create_and_setup_view() -> TreeView {
     // Hide headers
     tree.set_headers_visible(false);
 
-    // Creating the column inside the view
+    // Create the columns inside the view
     append_column(&tree, 0);
+    append_column(&tree, 1);
 
     tree
 }
