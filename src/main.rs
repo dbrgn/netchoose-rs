@@ -4,7 +4,9 @@ mod netctl;
 
 use gtk::prelude::*;
 use gtk::{Window, WindowType, WindowPosition};
+use gtk::{Box, Orientation};
 use gtk::{ListStore, TreeView, TreeViewColumn, CellRendererText};
+use gtk::{Toolbar, ToolButton};
 
 fn create_and_fill_model() -> ListStore {
     let model = ListStore::new(&[String::static_type(), String::static_type()]);
@@ -41,6 +43,14 @@ fn create_and_setup_view() -> TreeView {
     tree
 }
 
+fn create_toolbar() -> Toolbar {
+    let toolbar = Toolbar::new();
+    let refresh = ToolButton::new_from_stock("gtk-refresh");
+    ToolItemExt::set_tooltip_text(&refresh, "Reload the list of profiles");
+    toolbar.insert(&refresh, -1);
+    toolbar
+}
+
 fn main() {
     if gtk::init().is_err() {
         println!("Failed to initialize GTK.");
@@ -52,6 +62,12 @@ fn main() {
     window.set_title("Netchoose");
     window.set_default_size(240, 320);
     window.set_position(WindowPosition::Center);
+
+    // Create vertical box view
+    let v_box = Box::new(Orientation::Vertical, 0);
+
+    // Create toolbar
+    let toolbar = create_toolbar();
 
     // Create tree view
     let list = create_and_setup_view();
@@ -72,7 +88,9 @@ fn main() {
     });
 
     // Show all widgets
-    window.add(&list);
+    v_box.pack_start(&toolbar, false, false, 0);
+    v_box.pack_start(&list, true, true, 0);
+    window.add(&v_box);
     window.show_all();
 
     // Window closing event
